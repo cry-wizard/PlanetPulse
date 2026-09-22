@@ -5,7 +5,7 @@
 > **Hackathon ID:** `AZIS-AD2SV8`  
 > **Team:** Haridwar Team 09 (Solo Participant)  
 > **College:** Haridwar University  
-> **Live Deployed App:** [https://planetpulse-git-main-sid90s-projects.vercel.app](https://planetpulse-git-main-sid90s-projects.vercel.app)  
+> **Live Deployed App:** [https://planetpulse0.netlify.app/](https://planetpulse0.netlify.app/)  
 
 ---
 
@@ -14,7 +14,7 @@
 | Requirement | Status | Details |
 | :--- | :---: | :--- |
 | **Hackathon ID at Root** | ✅ **Passed** | `AZIS-AD2SV8` displayed prominently at the top of `README.md` and `DECISIONS.md`. |
-| **Deployed Public App** | ✅ **Passed** | Live on Vercel at [https://planetpulse-git-main-sid90s-projects.vercel.app](https://planetpulse-git-main-sid90s-projects.vercel.app). |
+| **Deployed Public App** | ✅ **Passed** | Live on Netlify at [https://planetpulse0.netlify.app/](https://planetpulse0.netlify.app/). |
 | **No Authentication** | ✅ **Passed** | **Zero auth** (no login/signup). Graders can immediately test all features without accounts. |
 | **All 5 Required Features** | ✅ **Passed** | Full implementation of activity logging, weekly dashboard, target budget, history, and live API. |
 | **DECISIONS.md** | ✅ **Passed** | Comprehensive documentation of all 3 Decision Points with rationale. |
@@ -115,7 +115,7 @@ PlanetPulse is architected as a pure client-side web application with persistent
 - **Charts:** Recharts (SVG Donut Chart with Tooltips)
 - **Icons:** Lucide React
 - **External API:** UK National Grid Carbon Intensity API
-- **Deployment:** Vercel
+- **Deployment:** Netlify ([planetpulse0.netlify.app](https://planetpulse0.netlify.app/))
 
 ---
 
@@ -129,8 +129,8 @@ PlanetPulse is architected as a pure client-side web application with persistent
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/planetpulse.git
-cd planetpulse
+git clone https://github.com/cry-wizard/PlanetPulse.git
+cd PlanetPulse
 
 # 2. Install dependencies
 npm install

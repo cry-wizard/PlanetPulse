@@ -72,7 +72,7 @@ Per the brief's explicit instruction, PlanetPulse has zero authentication. No si
 
 ### Tech stack
 
-- **Next.js 14+ App Router** — framework that deploys trivially to Vercel (one-click), supports SSR/SSG, has excellent TypeScript support.
+- **Next.js 14+ App Router** — modern React framework with full support for SSR/SSG and edge deployments on Netlify.
 - **TypeScript** — type safety for the activity model, API responses, and component props.
 - **Tailwind CSS v4** — utility-first styling, custom design tokens via `@theme` block in `globals.css`.
 - **framer-motion** — smooth entrance animations (fade-in-up stagger on dashboard cards).
@@ -89,10 +89,10 @@ Per the brief's explicit instruction, PlanetPulse has zero authentication. No si
 
 ### Deployment
 
-- **Target:** Vercel (Next.js native, free tier, custom domain optional).
-- The app is static-heavy with client-side state — Vercel's serverless functions are not needed for the core app, keeping it fast and cheap.
+- **Target:** Netlify (Global CDN edge network, instant deploys from Git).
+- The app is static-heavy with client-side state — standard static export/SSR capabilities on Netlify ensure high availability and sub-second loading.
 - **Environment variables:** none required (no backend, no API keys). The UK National Grid API is called directly from the browser.
-- **Live URL:** https://planetpulse-git-main-sid90s-projects.vercel.app
+- **Live URL:** https://planetpulse0.netlify.app/
 
 ### What we deliberately did NOT build
 
