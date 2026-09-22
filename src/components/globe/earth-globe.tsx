@@ -569,116 +569,38 @@ export function EarthGlobe({
     const earthRadius = 1.25;
     const earthGeometry = new THREE.SphereGeometry(earthRadius, 64, 64);
 
-    // Procedural Daytime Earth Texture
-    const dayCanvas = document.createElement("canvas");
-    dayCanvas.width = 1024;
-    dayCanvas.height = 512;
-    const dctx = dayCanvas.getContext("2d");
-    if (dctx) {
-      const oceanGrad = dctx.createLinearGradient(0, 0, 0, dayCanvas.height);
-      oceanGrad.addColorStop(0, "#0c1b33");
-      oceanGrad.addColorStop(0.5, "#143156");
-      oceanGrad.addColorStop(1, "#0c1b33");
-      dctx.fillStyle = oceanGrad;
-      dctx.fillRect(0, 0, dayCanvas.width, dayCanvas.height);
+    // ── Load Realistic NASA Earth Textures ──
+    const textureLoader = new THREE.TextureLoader();
+    const dayTexture = textureLoader.load("/textures/earth-daymap-4k.jpg");
+    const bumpTexture = textureLoader.load("/textures/earth-bump-4k.jpg");
+    const specularTexture = textureLoader.load("/textures/earth-specular-4k.jpg");
 
-      const continents = [
-        { x: 0.22, y: 0.26, w: 0.16, h: 0.22, color: "#23472b" },
-        { x: 0.2, y: 0.36, w: 0.13, h: 0.14, color: "#456b37" },
-        { x: 0.29, y: 0.52, w: 0.08, h: 0.28, color: "#1b4424" },
-        { x: 0.49, y: 0.34, w: 0.11, h: 0.12, color: "#8c6b38" },
-        { x: 0.62, y: 0.22, w: 0.22, h: 0.18, color: "#375932" },
-        { x: 0.82, y: 0.58, w: 0.08, h: 0.07, color: "#784b25" },
-      ];
-
-      continents.forEach((c) => {
-        dctx.fillStyle = c.color;
-        dctx.beginPath();
-        dctx.ellipse(c.x * dayCanvas.width, c.y * dayCanvas.height, (c.w * dayCanvas.width) / 2, (c.h * dayCanvas.height) / 2, 0, 0, Math.PI * 2);
-        dctx.fill();
-      });
-    }
-
-    // Procedural Nighttime City Lights Texture (Glowing amber energy nodes)
-    const nightCanvas = document.createElement("canvas");
-    nightCanvas.width = 1024;
-    nightCanvas.height = 512;
-    const nctx = nightCanvas.getContext("2d");
-    if (nctx) {
-      nctx.fillStyle = "#020409";
-      nctx.fillRect(0, 0, nightCanvas.width, nightCanvas.height);
-
-      // Clustered city lights across landmasses
-      for (let i = 0; i < 380; i++) {
-        const nx = Math.random() * nightCanvas.width;
-        const ny = (0.2 + Math.random() * 0.6) * nightCanvas.height;
-        const isHub = Math.random() < 0.2;
-
-        const halo = nctx.createRadialGradient(nx, ny, 0.5, nx, ny, isHub ? 8 : 4);
-        halo.addColorStop(0, "rgba(254, 240, 138, 0.95)");
-        halo.addColorStop(0.4, "rgba(245, 158, 11, 0.5)");
-        halo.addColorStop(1, "rgba(217, 119, 6, 0)");
-        nctx.fillStyle = halo;
-        nctx.beginPath();
-        nctx.arc(nx, ny, isHub ? 8 : 4, 0, Math.PI * 2);
-        nctx.fill();
-      }
-    }
-
-    const dayTexture = new THREE.CanvasTexture(dayCanvas);
-    const nightTexture = new THREE.CanvasTexture(nightCanvas);
-
-    // Custom Day/Night Planetary Shader with Twilight Sunset Terminator
-    const earthMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        dayTexture: { value: dayTexture },
-        nightTexture: { value: nightTexture },
-        sunDirection: { value: new THREE.Vector3(1.2, 0.8, 0.7).normalize() },
-      },
-      vertexShader: `
-        varying vec3 vNormal;
-        varying vec2 vUv;
-        varying vec3 vPosition;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          vUv = uv;
-          vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        varying vec2 vUv;
-        varying vec3 vPosition;
-        uniform sampler2D dayTexture;
-        uniform sampler2D nightTexture;
-        uniform vec3 sunDirection;
-
-        void main() {
-          vec3 normal = normalize(vNormal);
-          float sunDot = dot(normal, normalize(sunDirection));
-
-          float dayFactor = smoothstep(-0.15, 0.25, sunDot);
-          float terminator = smoothstep(-0.15, 0.05, sunDot) * (1.0 - smoothstep(0.05, 0.25, sunDot));
-          vec3 sunsetGlow = vec3(1.0, 0.45, 0.1) * terminator * 0.75;
-
-          vec4 dayColor = texture2D(dayTexture, vUv);
-          vec4 nightColor = texture2D(nightTexture, vUv);
-
-          vec3 base = mix(nightColor.rgb, dayColor.rgb, dayFactor) + sunsetGlow;
-
-          vec3 viewDir = normalize(-vPosition);
-          float rim = 1.0 - max(0.0, dot(viewDir, normal));
-          float rimIntensity = pow(rim, 3.5) * max(0.0, sunDot + 0.3);
-          vec3 atmoRim = vec3(0.3, 0.75, 1.0) * rimIntensity * 0.9;
-
-          gl_FragColor = vec4(base + atmoRim, 1.0);
-        }
-      `,
+    // Realistic Earth with NASA Blue Marble imagery
+    const earthMaterial = new THREE.MeshStandardMaterial({
+      map: dayTexture,
+      bumpMap: bumpTexture,
+      bumpScale: 0.12,
+      roughness: 0.6,
+      metalness: 0.1,
     });
 
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     earthGroup.add(earth);
+
+    // ── Cloud Layer ──
+    const cloudTexture = textureLoader.load("/textures/earth-clouds-map-4k.jpg");
+    const cloudMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(earthRadius + 0.015, 64, 64),
+      new THREE.MeshStandardMaterial({
+        map: cloudTexture,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      })
+    );
+    earthGroup.add(cloudMesh);
 
     // Atmospheric Limb Shader
     const glowGeometry = new THREE.SphereGeometry(earthRadius + 0.048, 64, 64);
@@ -797,6 +719,8 @@ export function EarthGlobe({
         const rotX = THREE.MathUtils.lerp(transition.startX, transition.endX, eased);
         earth.rotation.y = rotY;
         earth.rotation.x = rotX;
+        cloudMesh.rotation.y = rotY * 1.08;
+        cloudMesh.rotation.x = rotX * 0.95;
 
         earthGroup.position.x = THREE.MathUtils.lerp(transition.startPosX, transition.endPosX, eased);
         earthGroup.position.y = THREE.MathUtils.lerp(transition.startPosY, transition.endPosY, eased);
@@ -817,6 +741,7 @@ export function EarthGlobe({
         }
       } else {
         earth.rotation.y += rotationSpeed;
+        cloudMesh.rotation.y += rotationSpeed * 1.12;
       }
 
       stars.rotation.y += rotationSpeed * 0.05;
@@ -846,7 +771,11 @@ export function EarthGlobe({
       }
       renderer?.dispose();
       dayTexture.dispose();
-      nightTexture.dispose();
+      bumpTexture.dispose();
+      specularTexture.dispose();
+      cloudTexture.dispose();
+      cloudMesh.geometry.dispose();
+      cloudMesh.material.dispose();
       earthGeometry.dispose();
       earthMaterial.dispose();
       glowGeometry.dispose();

@@ -27,16 +27,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${sora.variable} ${inter.variable} h-full dark`} data-theme="dark">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.setAttribute("data-theme", "dark"); document.documentElement.classList.add("dark");`,
-          }}
-        />
-      </head>
+    <html
+      lang="en"
+      className={`${sora.variable} ${inter.variable} h-full dark`}
+      data-theme="dark"
+      suppressHydrationWarning
+    >
+      <head />
       <body
         className="h-full antialiased font-sans bg-dark-980 text-dark-100 selection:bg-primary-500 selection:text-white dark"
+        suppressHydrationWarning
       >
         {children}
       </body>
